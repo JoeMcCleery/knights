@@ -12,8 +12,11 @@ CKnave = Symbol("C is a Knave")
 # Puzzle 0
 # A says "I am both a knight and a knave."
 knowledge0 = And(
-    Biconditional(AKnight, Not(AKnave)),
+    # Can be a knight or a knave but not both
+    And(Or(AKnight, AKnave), Not(And(AKnight, AKnave))),
+    # If A is a knight then they are both a knight and a knave
     Implication(AKnight, And(AKnight, AKnave)),
+    # If A is a knave then their statement is false
     Implication(AKnave, Not(And(AKnight, AKnave)))
 )
 
@@ -21,9 +24,12 @@ knowledge0 = And(
 # A says "We are both knaves."
 # B says nothing.
 knowledge1 = And(
-    Biconditional(AKnight, Not(AKnave)),
-    Biconditional(BKnight, Not(BKnave)),
+    # Can be a knight or a knave but not both
+    And(Or(AKnight, AKnave), Not(And(AKnight, AKnave))),
+    And(Or(BKnight, BKnave), Not(And(BKnight, BKnave))),
+    # If A is a knight then both A and B are knaves
     Implication(AKnight, And(AKnave, BKnave)),
+    # If A is a knave then their statement is false
     Implication(AKnave, Not(And(AKnave, BKnave)))
 )
 
@@ -31,12 +37,17 @@ knowledge1 = And(
 # A says "We are the same kind."
 # B says "We are of different kinds."
 knowledge2 = And(
-    Biconditional(AKnight, Not(AKnave)),
-    Biconditional(BKnight, Not(BKnave)),
-    Implication(AKnight, And(AKnight, BKnight)),
-    Implication(AKnave, Not(And(AKnave, BKnave))),
-    Implication(BKnight, And(BKnight, AKnave)),
-    Implication(BKnave, Not(And(BKnave, AKnight)))
+    # Can be a knight or a knave but not both
+    And(Or(AKnight, AKnave), Not(And(AKnight, AKnave))),
+    And(Or(BKnight, BKnave), Not(And(BKnight, BKnave))),
+    # If A is a knight then A and B are the same kind
+    Implication(AKnight, Or(And(AKnight, BKnight), And(AKnave, BKnave))),
+    # If A is a knave then their statement is false
+    Implication(AKnave, Not(Or(And(AKnight, BKnight), And(AKnave, BKnave)))),
+    # If B is a knight then A and B are different kinds
+    Implication(BKnight, Or(And(AKnight, BKnave), And(AKnave, BKnight))),
+    # If B is a knave then their statement is false
+    Implication(BKnave, Not(Or(And(AKnight, BKnave), And(AKnave, BKnight))))
 )
 
 # Puzzle 3
@@ -45,16 +56,25 @@ knowledge2 = And(
 # B says "C is a knave."
 # C says "A is a knight."
 knowledge3 = And(
-    Biconditional(AKnight, Not(AKnave)),
-    Biconditional(BKnight, Not(BKnave)),
-    Biconditional(CKnight, Not(CKnave)),
+    # Can be a knight or a knave but not both
+    And(Or(AKnight, AKnave), Not(And(AKnight, AKnave))),
+    And(Or(BKnight, BKnave), Not(And(BKnight, BKnave))),
+    And(Or(CKnight, CKnave), Not(And(CKnight, CKnave))),
+    # If A is a knight they are a knight or a knave
     Implication(AKnight, Or(AKnight, AKnave)),
+    # If A is a knave their statement is false
     Implication(AKnave, Not(Or(AKnight, AKnave))),
+    # If B is a knight and A is a knight then A is a knave, If A was instead a knave then their statement is false
     Implication(BKnight, Or(And(AKnight, AKnave), And(AKnave, Not(AKnave)))),
+    # If B is a knave then their statement is false
     Implication(BKnave, Not(Or(And(AKnight, AKnave), And(AKnave, Not(AKnave))))),
+    # If B is a knight then C is a knave
     Implication(BKnight, CKnave),
+    # If B is a knave then their statement is false
     Implication(BKnave, Not(CKnave)),
+    # If C is a knight then A is a knight
     Implication(CKnight, AKnight),
+    # If C is a knave then their statement is false
     Implication(CKnave, Not(AKnight))
 )
 
